@@ -1,0 +1,250 @@
+{
+  "schema_version": "1.0.0",
+  "skill_id": 95,
+  "skill_slug": "translation-quality-evaluation",
+  "evaluation_timestamp": "2026-07-02T14:30:00Z",
+  "evaluation_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "source_text": "The patient should take 500mg of acetaminophen every 4-6 hours for pain. Do not exceed 3000mg daily.",
+  "target_text": "El paciente debe tomar 500mg de acetaminofeno cada 4-6 horas para el dolor. No exceder 3000mg diarios.",
+  "source_language": "en",
+  "target_language": "es",
+  "locale": "es_ES",
+  "domain": "medical",
+  "content_type": "medical_report",
+  "frameworks": [
+    {
+      "name": "MQM",
+      "version": "2022",
+      "citation": "https://themqm.org",
+      "application": "Used MQM error typology for error categorization and dimension scoring"
+    },
+    {
+      "name": "ISO 17100",
+      "version": "2015",
+      "citation": "https://www.iso.org/standard/59149.html",
+      "application": "Applied ISO 17100 competence requirements for medical domain evaluation"
+    },
+    {
+      "name": "DQF",
+      "version": "2021",
+      "citation": "https://www.taus.net/dqf-model",
+      "application": "Applied DQF Life Sciences quality model for accuracy-critical content"
+    }
+  ],
+  "dimensions": {
+    "accuracy": {
+      "score": 90,
+      "evidence": [
+        "Dosage information accurately preserved (500mg, 4-6 hours, 3000mg daily)",
+        "Pain indication correctly translated",
+        "Warning appropriately rendered"
+      ],
+      "framework": "MQM Accuracy",
+      "weight": 0.35
+    },
+    "terminology": {
+      "score": 85,
+      "evidence": [
+        "Medical terms generally correct: 'acetaminophen' → 'acetaminofeno' (acceptable in Spain, 'acetaminofén' preferred in Latin America)",
+        "Consistent use of medical terminology throughout"
+      ],
+      "framework": "MQM Terminology + ISO 12616",
+      "weight": 0.20
+    },
+    "fluency": {
+      "score": 88,
+      "evidence": [
+        "Natural Spanish phrasing throughout",
+        "Appropriate sentence structure for medical instructions",
+        "No grammatical errors detected"
+      ],
+      "framework": "MQM Fluency",
+      "weight": 0.15
+    },
+    "register": {
+      "score": 90,
+      "evidence": [
+        "Appropriate formal register for medical instructions",
+        "Professional tone maintained",
+        "Correct use of imperative mood for instructions"
+      ],
+      "framework": "Skopos theory + DQF Medical",
+      "weight": 0.10
+    },
+    "domain_conventions": {
+      "score": 92,
+      "evidence": [
+        "Medical document conventions properly followed",
+        "Dosage format standard (number + unit)",
+        "Medical instructions structure appropriate"
+      ],
+      "framework": "ISO 17100 Medical Domain",
+      "weight": 0.08
+    },
+    "locale_conventions": {
+      "score": 85,
+      "evidence": [
+        "Number formatting appropriate for Spanish locale",
+        "Space between number and unit (500mg → 500 mg would be preferred but 500mg acceptable)",
+        "No date/time conventions to evaluate"
+      ],
+      "framework": "MQM Locale Convention",
+      "weight": 0.07
+    },
+    "consistency": {
+      "score": 95,
+      "evidence": [
+        "Terminology consistent throughout (short text)",
+        "No inconsistent use of terms or phrasing"
+      ],
+      "framework": "MQM Terminology + ISO 12616",
+      "weight": 0.10
+    },
+    "readability": {
+      "score": 88,
+      "evidence": [
+        "Clear, unambiguous instructions",
+        "Appropriate reading level for patient instructions",
+        "Well-structured sentence flow"
+      ],
+      "framework": "DQF Life Sciences",
+      "weight": 0.05
+    }
+  },
+  "error_log": [
+    {
+      "error_id": "err_001",
+      "category": "Terminology",
+      "subcategory": "Non-preferred term",
+      "severity": "Minor",
+      "severity_score": 0.3,
+      "source_span": "acetaminophen",
+      "target_span": "acetaminofeno",
+      "source_location": {
+        "start": 27,
+        "end": 39,
+        "line": 1
+      },
+      "target_location": {
+        "start": 27,
+        "end": 39,
+        "line": 1
+      },
+      "description": "'Acetaminofeno' is acceptable in Spain but 'acetaminofén' is the preferred international Spanish term",
+      "suggestion": "Consider using 'acetaminofén' or 'paracetamol' for broader locale acceptance"
+    }
+  ],
+  "overall_score": {
+    "score": 89.1,
+    "band": "Good",
+    "calculation_method": "Weighted average with accuracy-critical weights",
+    "weights": {
+      "accuracy": 0.35,
+      "terminology": 0.20,
+      "fluency": 0.15,
+      "register": 0.10,
+      "consistency": 0.10,
+      "domain_conventions": 0.08,
+      "locale_conventions": 0.07,
+      "readability": 0.05
+    }
+  },
+  "strengths": [
+    {
+      "dimension": "accuracy",
+      "description": "Excellent preservation of critical medical information",
+      "evidence": "Dosage (500mg, 4-6 hours, 3000mg daily) accurately translated"
+    },
+    {
+      "dimension": "consistency",
+      "description": "Perfect consistency in terminology",
+      "evidence": "No instances of inconsistent terminology detected"
+    },
+    {
+      "dimension": "register",
+      "description": "Appropriate formal medical register",
+      "evidence": "Professional tone maintained throughout"
+    }
+  ],
+  "weaknesses": [
+    {
+      "dimension": "terminology",
+      "description": "Non-preferred regional term for acetaminophen",
+      "severity": "Minor",
+      "evidence": "'Acetaminofeno' used instead of preferred 'acetaminofén' or 'paracetamol'"
+    }
+  ],
+  "quality_gates_passed": [
+    "Every dimension has numeric score and evidence",
+    "At least one framework explicitly cited (3 frameworks cited: MQM, ISO 17100, DQF)",
+    "Roadmap items have effort, impact, and measurable success metric",
+    "Devil's-advocate review completed (challenged accuracy findings, confirmed)",
+    "Error log provides MQM-typed categorization"
+  ],
+  "quality_gates_failed": [],
+  "roadmap": {
+    "quick_wins": [
+      {
+        "recommendation": "Replace 'acetaminofeno' with 'acetaminofén' or 'paracetamol' for broader locale acceptance",
+        "affected_dimensions": ["terminology"],
+        "effort": "Low",
+        "impact": "Medium",
+        "priority_score": 0.5,
+        "success_metric": "Terminology score increases to 90+",
+        "framework": "ISO 12616"
+      },
+      {
+        "recommendation": "Add space between number and unit: '500 mg' instead of '500mg'",
+        "affected_dimensions": ["locale_conventions"],
+        "effort": "Low",
+        "impact": "Low",
+        "priority_score": 0.33,
+        "success_metric": "Locale conventions score increases to 90+",
+        "framework": "MQM Locale Convention"
+      }
+    ],
+    "major_projects": [
+      {
+        "recommendation": "Establish terminology glossary for consistent medication name translations across all documents",
+        "affected_dimensions": ["terminology", "consistency"],
+        "effort": "Medium",
+        "impact": "High",
+        "priority_score": 1.0,
+        "success_metric": "Zero terminology inconsistencies across all medical documents",
+        "framework": "ISO 12616"
+      }
+    ],
+    "long_term": [
+      {
+        "recommendation": "Implement terminology management system with automated consistency checking",
+        "affected_dimensions": ["terminology", "consistency"],
+        "effort": "High",
+        "impact": "High",
+        "priority_score": 1.0,
+        "success_metric": "Automated detection of 100% of terminology inconsistencies",
+        "framework": "ISO 12616"
+      },
+      {
+        "recommendation": "Develop locale-specific style guides for medical translations (Spain vs. Latin America)",
+        "affected_dimensions": ["terminology", "locale_conventions"],
+        "effort": "High",
+        "impact": "High",
+        "priority_score": 1.0,
+        "success_metric": "All future translations aligned with target locale conventions",
+        "framework": "ISO 17100"
+      }
+    ]
+  },
+  "metadata": {
+    "evaluator": "Translation Quality Evaluation skill v1.0.0",
+    "evaluation_duration_ms": 1250,
+    "confidence": 0.95,
+    "confidence_explanation": "High confidence based on clear source text, well-formed target translation, and appropriate application of MQM and ISO frameworks",
+    "notes": [
+      "Source text was well-structured medical instruction",
+      "Target translation showed professional quality",
+      "Minor terminology preference noted (regional variation)",
+      "No critical errors detected"
+    ]
+  }
+}

@@ -1,0 +1,474 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://skills.design-creative-media.cluster/schemas/translation-quality-scoring/v1.0.0.json",
+  "title": "Translation Quality Scoring Output Schema",
+  "description": "Standardized JSON schema for translation quality evaluation scores across the design-creative-media cluster. Enables interoperability between evaluation skills and downstream processing.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "skill_id",
+    "skill_slug",
+    "evaluation_timestamp",
+    "source_language",
+    "target_language",
+    "domain",
+    "frameworks",
+    "dimensions",
+    "overall_score",
+    "quality_gates_passed",
+    "roadmap"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Version of this schema (semantic versioning)",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "example": "1.0.0"
+    },
+    "skill_id": {
+      "type": "integer",
+      "description": "Unique identifier for the skill that produced this evaluation",
+      "example": 95
+    },
+    "skill_slug": {
+      "type": "string",
+      "description": "Human-readable identifier for the skill",
+      "example": "translation-quality-evaluation"
+    },
+    "evaluation_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the evaluation was performed"
+    },
+    "evaluation_id": {
+      "type": "string",
+      "description": "Unique identifier for this evaluation instance (UUID v4)",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "source_text": {
+      "type": "string",
+      "description": "The source text that was evaluated (optional, can be truncated for large texts)"
+    },
+    "target_text": {
+      "type": "string",
+      "description": "The target translation that was evaluated (optional, can be truncated for large texts)"
+    },
+    "source_language": {
+      "type": "string",
+      "description": "ISO 639-1 code for the source language",
+      "pattern": "^[a-z]{2}$",
+      "examples": ["en", "es", "fr", "de", "zh"]
+    },
+    "target_language": {
+      "type": "string",
+      "description": "ISO 639-1 code for the target language",
+      "pattern": "^[a-z]{2}$",
+      "examples": ["en", "es", "fr", "de", "zh"]
+    },
+    "locale": {
+      "type": "string",
+      "description": "Locale code (ISO 639-1 + ISO 3166-1 alpha-2)",
+      "pattern": "^[a-z]{2}_[A-Z]{2}$",
+      "examples": ["en_US", "es_ES", "fr_FR", "de_DE", "zh_CN"]
+    },
+    "domain": {
+      "type": "string",
+      "description": "Domain/subject area of the translation",
+      "enum": [
+        "medical",
+        "legal",
+        "technical",
+        "marketing",
+        "software",
+        "financial",
+        "publishing",
+        "audiovisual",
+        "general",
+        "other"
+      ]
+    },
+    "content_type": {
+      "type": "string",
+      "description": "Type of content being evaluated",
+      "enum": [
+        "user_manual",
+        "marketing_copy",
+        "ui_strings",
+        "legal_contract",
+        "medical_report",
+        "technical_spec",
+        "financial_report",
+        "website_content",
+        "software_documentation",
+        "other"
+      ]
+    },
+    "frameworks": {
+      "type": "array",
+      "description": "Evaluation frameworks used for this evaluation",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "version", "citation"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the framework",
+            "enum": ["MQM", "DQF", "ISO 17100", "ISO 12616", "Skopos", "Custom"]
+          },
+          "version": {
+            "type": "string",
+            "description": "Version or year of the framework",
+            "example": "2022"
+          },
+          "citation": {
+            "type": "string",
+            "description": "Full citation or URL for the framework",
+            "example": "https://themqm.org"
+          },
+          "application": {
+            "type": "string",
+            "description": "How the framework was applied in this evaluation",
+            "example": "Used MQM error typology for error categorization"
+          }
+        }
+      }
+    },
+    "dimensions": {
+      "type": "object",
+      "description": "Scores for each evaluation dimension",
+      "required": ["accuracy", "terminology", "fluency", "register", "domain_conventions", "locale_conventions", "consistency", "readability"],
+      "properties": {
+        "accuracy": {
+          "$ref": "#/definitions/dimensionScore"
+        },
+        "terminology": {
+          "$ref": "#/definitions/dimensionScore"
+        },
+        "fluency": {
+          "$ref": "#/definitions/dimensionScore"
+        },
+        "register": {
+          "$ref": "#/definitions/dimensionScore"
+        },
+        "domain_conventions": {
+          "$ref": "#/definitions/dimensionScore"
+        },
+        "locale_conventions": {
+          "$ref": "#/definitions/dimensionScore"
+        },
+        "consistency": {
+          "$ref": "#/definitions/dimensionScore"
+        },
+        "readability": {
+          "$ref": "#/definitions/dimensionScore"
+        }
+      }
+    },
+    "error_log": {
+      "type": "array",
+      "description": "Detailed error log with MQM-typed errors",
+      "items": {
+        "type": "object",
+        "required": ["category", "subcategory", "severity", "source_span", "target_span", "description"],
+        "properties": {
+          "error_id": {
+            "type": "string",
+            "description": "Unique identifier for this error"
+          },
+          "category": {
+            "type": "string",
+            "description": "MQM primary category",
+            "enum": ["Accuracy", "Fluency", "Terminology", "Design", "Locale_Convention", "Verity"]
+          },
+          "subcategory": {
+            "type": "string",
+            "description": "MQM subcategory",
+            "examples": ["Mistranslation", "Omission", "Grammar", "Inconsistency"]
+          },
+          "severity": {
+            "type": "string",
+            "description": "Severity level of the error",
+            "enum": ["Critical", "Major", "Minor", "Trivial"]
+          },
+          "severity_score": {
+            "type": "number",
+            "description": "Numeric severity weight (0-1)",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "source_span": {
+            "type": "string",
+            "description": "The problematic text in the source (quoted)",
+            "examples": ["The patient should take 500mg"]
+          },
+          "target_span": {
+            "type": "string",
+            "description": "The problematic text in the target (quoted)",
+            "examples": ["El paciente debe tomar 500mg"]
+          },
+          "source_location": {
+            "type": "object",
+            "description": "Location in source text",
+            "properties": {
+              "start": {
+                "type": "integer",
+                "description": "Character index (0-based)"
+              },
+              "end": {
+                "type": "integer",
+                "description": "Character index (0-based)"
+              },
+              "line": {
+                "type": "integer",
+                "description": "Line number (1-based)"
+              }
+            }
+          },
+          "target_location": {
+            "type": "object",
+            "description": "Location in target text",
+            "properties": {
+              "start": {"type": "integer"},
+              "end": {"type": "integer"},
+              "line": {"type": "integer"}
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "Explanation of the error",
+            "examples": ["Incorrect medical terminology"]
+          },
+          "suggestion": {
+            "type": "string",
+            "description": "Suggested correction (optional)",
+            "examples": ["Use 'acetaminofén' instead of 'acetaminofeno'"]
+          }
+        }
+      }
+    },
+    "overall_score": {
+      "type": "object",
+      "required": ["score", "band", "calculation_method"],
+      "properties": {
+        "score": {
+          "type": "number",
+          "description": "Overall weighted score (0-100)",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "band": {
+          "type": "string",
+          "description": "Quality band based on score",
+          "enum": ["Excellent", "Good", "Fair", "Poor", "Unacceptable"]
+        },
+        "calculation_method": {
+          "type": "string",
+          "description": "How the score was calculated",
+          "example": "Weighted average: accuracy(0.35) + terminology(0.20) + ..."
+        },
+        "weights": {
+          "type": "object",
+          "description": "Weights used for each dimension",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "strengths": {
+      "type": "array",
+      "description": "Key strengths identified in the translation",
+      "items": {
+        "type": "object",
+        "required": ["dimension", "description"],
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "description": "Dimension where this strength was found"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the strength"
+          },
+          "evidence": {
+            "type": "string",
+            "description": "Supporting evidence (quoted)"
+          }
+        }
+      }
+    },
+    "weaknesses": {
+      "type": "array",
+      "description": "Key weaknesses identified in the translation",
+      "items": {
+        "type": "object",
+        "required": ["dimension", "description", "severity"],
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "description": "Dimension where this weakness was found"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the weakness"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["Critical", "Major", "Minor", "Trivial"]
+          },
+          "evidence": {
+            "type": "string",
+            "description": "Supporting evidence (quoted)"
+          }
+        }
+      }
+    },
+    "quality_gates_passed": {
+      "type": "array",
+      "description": "Quality gates that were checked and passed",
+      "items": {
+        "type": "string",
+        "examples": [
+          "Every dimension has numeric score and evidence",
+          "At least one framework explicitly cited",
+          "Roadmap items have effort, impact, and measurable success metric"
+        ]
+      }
+    },
+    "quality_gates_failed": {
+      "type": "array",
+      "description": "Quality gates that failed (empty if all passed)",
+      "items": {
+        "type": "string",
+        "examples": ["Missing evidence for consistency dimension"]
+      }
+    },
+    "roadmap": {
+      "type": "object",
+      "required": ["quick_wins", "major_projects", "long_term"],
+      "properties": {
+        "quick_wins": {
+          "$ref": "#/definitions/roadmapCategory"
+        },
+        "major_projects": {
+          "$ref": "#/definitions/roadmapCategory"
+        },
+        "long_term": {
+          "$ref": "#/definitions/roadmapCategory"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata about the evaluation",
+      "properties": {
+        "evaluator": {
+          "type": "string",
+          "description": "Who or what performed the evaluation",
+          "examples": ["Translation Quality Evaluation skill v1.0.0", "Human reviewer"]
+        },
+        "evaluation_duration_ms": {
+          "type": "integer",
+          "description": "Time taken to perform evaluation in milliseconds"
+        },
+        "confidence": {
+          "type": "number",
+          "description": "Confidence level in the evaluation (0-1)",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "confidence_explanation": {
+          "type": "string",
+          "description": "Explanation of confidence level"
+        },
+        "notes": {
+          "type": "array",
+          "description": "Additional notes about the evaluation",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "dimensionScore": {
+      "type": "object",
+      "required": ["score", "evidence"],
+      "properties": {
+        "score": {
+          "type": "number",
+          "description": "Dimension score (0-100)",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "evidence": {
+          "type": "array",
+          "description": "Evidence supporting this score",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "framework": {
+          "type": "string",
+          "description": "Framework used to assess this dimension"
+        },
+        "weight": {
+          "type": "number",
+          "description": "Weight of this dimension in overall score (0-1)",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "roadmapCategory": {
+      "type": "array",
+      "description": "Improvement recommendations in a priority category",
+      "items": {
+        "type": "object",
+        "required": ["recommendation", "effort", "impact", "success_metric"],
+        "properties": {
+          "recommendation": {
+            "type": "string",
+            "description": "Specific recommendation for improvement"
+          },
+          "affected_dimensions": {
+            "type": "array",
+            "description": "Dimensions this recommendation addresses",
+            "items": {
+              "type": "string"
+            }
+          },
+          "effort": {
+            "type": "string",
+            "description": "Estimated effort to implement",
+            "enum": ["Low", "Medium", "High"]
+          },
+          "impact": {
+            "type": "string",
+            "description": "Expected impact on quality",
+            "enum": ["Low", "Medium", "High"]
+          },
+          "priority_score": {
+            "type": "number",
+            "description": "Calculated priority (impact / effort)",
+            "minimum": 0
+          },
+          "success_metric": {
+            "type": "string",
+            "description": "Measurable success criterion",
+            "examples": ["Consistency score increases by 20 points"]
+          },
+          "framework": {
+            "type": "string",
+            "description": "Framework supporting this recommendation"
+          }
+        }
+      }
+    }
+  }
+}
